@@ -4,6 +4,24 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { TouchableOpacity } from "react-native";
 
 export default function App() {
+  const [correo, setCorreo] = useState('');
+  const [contraseña, setContraseña] = useState('');
+  const [error, setError] = useState('');
+
+  const validar = () => {
+    if (!correo || !contraseña) {
+      setError('Ingresa un correo y contraseña valido.');
+      return;
+    }
+
+    const usuario = correo.split('@')[0]; 
+    alert(`Hola, ${usuario}`);
+
+    setCorreo('');
+    setContraseña('');
+    setError('');
+  };
+
   return (
     <LinearGradient colors={['steelblue','skyblue']} style={styles.container}>
       <Text style={styles.Titulo}>Creando mi primera app con Expo y React Native!</Text>
@@ -11,7 +29,7 @@ export default function App() {
       <TextInput placeholder='@gmail.com' style={styles.Login}/>
       <TextInput placeholder='password' style={styles.Login}/>
       <StatusBar style="auto" />
-      <TouchableOpacity>
+      <TouchableOpacity onPress={validar}>
         <LinearGradient colors={['#0099FF','#00FFFF']} style={styles.Boton}>
             <Text style={{fontSize:15,fontWeight: 'bold', color:'white'}}>Aceptar</Text>
         </LinearGradient>
