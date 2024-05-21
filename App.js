@@ -1,39 +1,72 @@
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { TouchableOpacity } from "react-native";
 
 export default function App() {
-  const [correo, setCorreo] = useState('');
-  const [contraseña, setContraseña] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [validationError, setValidationError] = useState('');
+  const [limpiar, setLimpiar] = useState(false);
 
   const validar = () => {
-    if (!correo || !contraseña) {
-      setError('Ingresa un correo y contraseña valido.');
+    if (!email || !password) {
+      setValidationError('Ambos campos son obligatorios');
       return;
     }
 
-    const usuario = correo.split('@')[0]; 
-    alert(`Hola, ${usuario}`);
+    // Validación del correo electrónico (formato simple)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setValidationError('El correo electrónico no es válido');
+      return;
+    }
 
-    setCorreo('');
-    setContraseña('');
-    setError('');
+    // Validación de la contraseña (mínimo 6 caracteres)
+    if (password.length < 6) {
+      setValidationError('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    // Si pasa la validación, mostrar pantalla de bienvenida
+    mostrarBienvenida();
+    setLimpiar(true);
+  };
+
+  const mostrarBienvenida = () => {
+    const nombreUsuario = email.split('@')[0]; // Extraer nombre de usuario del correo electrónico
+    Alert.alert('Bienvenido', `Hola ${nombreUsuario}!`);
+    setValidationError('');
   };
 
   return (
     <LinearGradient colors={['steelblue','skyblue']} style={styles.container}>
       <Text style={styles.Titulo}>Creando mi primera app con Expo y React Native!</Text>
       <Text style={styles.Subtitulo}>Adrian Palma Sosa</Text>
-      <TextInput placeholder='@gmail.com' style={styles.Login}/>
-      <TextInput placeholder='password' style={styles.Login}/>
-      <StatusBar style="auto" />
+      <TextInput
+      placeholder='@gmail.com'
+      style={styles.Login}
+      value={limpiar ? '' : email}
+      onChangeText={text => setEmail(text)}
+    />
+    <TextInput
+      placeholder='password'
+      style={styles.Login}
+      secureTextEntry={true}
+      value={limpiar ? '' : password}
+      onChangeText={text => setPassword(text)}
+    />
+      {validationError ? <Text style={styles.Error}>{validationError}</Text> : null}
       <TouchableOpacity onPress={validar}>
         <LinearGradient colors={['#0099FF','#00FFFF']} style={styles.Boton}>
-            <Text style={{fontSize:15,fontWeight: 'bold', color:'white'}}>Aceptar</Text>
+          <Text style={{fontSize:15,fontWeight: 'bold', color:'white'}}>Aceptar</Text>
         </LinearGradient>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => setLimpiar(true)}>
+        <Text style={styles.Limpiar}>Limpiar</Text>
+      </TouchableOpacity>
+      <StatusBar style="auto" />
     </LinearGradient>
   );
 }
@@ -73,5 +106,15 @@ const styles = StyleSheet.create({
     borderColor : 'white',
     borderWidth : 3,
     borderRadius : 30,
-  }
+  },
+  Error: {
+    color: 'red',
+    marginTop: 10,
+  },
+  Limpiar: {
+    color: 'white',
+    fontSize: 15,
+    marginTop: 10,
+    textDecorationLine: 'underline',
+  },
 });
